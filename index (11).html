@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Propuesta Hub Digital 2026 - Andrés Nájera</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              900: '#0f172a',
+              800: '#1e293b',
+              700: '#334155',
+              500: '#3b82f6',
+              400: '#60a5fa',
+              300: '#93c5fd',
+              accent: '#8b5cf6',
+              success: '#10b981'
+            }
+          },
+          animation: {
+            'spin-slow': 'spin 12s linear infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'fade-in': 'fadeIn 1s ease-out'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { margin: 0; background-color: #0f172a; color: white; overflow: hidden; }
+    
+    .glass-panel {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    /* Slide Logic Classes */
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 700ms ease-in-out, transform 700ms ease-in-out;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Tab Logic */
+    .tab-content {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      height: 100%;
+    }
+    .tab-content.active {
+      display: block;
+      opacity: 1;
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "recharts": "https://esm.sh/recharts@^3.6.0"
+  }
+}
+</script>
+</head>
+<body class="font-sans text-white selection:bg-brand-500 selection:text-white">
+
+  <!-- Background Layer -->
+  <div class="fixed inset-0 z-0">
+    <div id="bg-image" class="absolute top-0 left-0 w-full h-full bg-[url('https://picsum.photos/1920/1080?grayscale&blur=2')] bg-cover bg-center opacity-5 transition-transform duration-[2000ms] scale-100"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-brand-900 via-brand-900/95 to-slate-900"></div>
+    <!-- Noise -->
+    <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')"></div>
+  </div>
+
+  <!-- Content Layer -->
+  <div id="slides-container" class="relative z-10 w-full h-screen">
+
+    <!-- SLIDE 0: INTRO -->
+    <div class="slide active" id="slide-0">
+      <div class="max-w-5xl w-full space-y-8 relative z-10 text-center md:text-left flex flex-col items-center md:items-start">
+        <div class="flex items-center gap-4 animate-fade-in">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400">
+            <i data-lucide="globe" class="w-4 h-4"></i>
+            <span class="text-sm font-semibold uppercase tracking-wider">Visión 2026</span>
+          </div>
+        </div>
+
+        <h1 class="text-6xl md:text-8xl font-extrabold tracking-tight text-white leading-[1.1]">
+          Ecosistema Digital <br />
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-brand-accent to-brand-500">
+            Andrés Nájera
+          </span>
+        </h1>
+
+        <div class="flex flex-col md:flex-row gap-8 items-start pt-4 w-full">
+          <div class="glass-panel p-6 rounded-xl max-w-lg border-l-4 border-l-brand-500 text-left">
+             <p class="text-xl text-slate-200 leading-relaxed font-light">
+              Propuesta técnica y estratégica para consolidar la marca personal como un <strong>activo digital escalable</strong>.
+              Centralización de autoridad, automatización de procesos comerciales y propiedad total de la audiencia.
+            </p>
+          </div>
+        </div>
+
+        <div class="pt-8 flex gap-4">
+          <button onclick="nextSlide()" class="group flex items-center gap-3 px-8 py-4 bg-white text-brand-900 rounded-full font-bold text-lg hover:bg-brand-50 hover:shadow-lg hover:shadow-brand-500/20 transition-all transform hover:-translate-y-1">
+            Explorar Estrategia
+            <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Abstract BG -->
+      <div class="absolute top-20 right-20 w-96 h-96 bg-brand-500/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen"></div>
+      <div class="absolute bottom-20 left-20 w-80 h-80 bg-brand-accent/20 blur-[120px] rounded-full pointer-events-none mix-blend-screen"></div>
+    </div>
+
+    <!-- SLIDE 1: PROBLEM -->
+    <div class="slide" id="slide-1">
+      <div class="w-full max-w-7xl h-full flex flex-col">
+        <!-- Tabs -->
+        <div class="flex justify-center mb-10 shrink-0">
+          <div class="bg-brand-900/50 p-1 rounded-full flex gap-2 border border-slate-700/50 backdrop-blur-md">
+            <button onclick="setProblemView('diagnosis')" id="btn-diagnosis" class="px-8 py-3 rounded-full text-sm font-bold tracking-wide transition-all bg-red-500/20 text-red-400 border border-red-500/30 shadow-lg shadow-red-900/20">
+              DIAGNÓSTICO
+            </button>
+            <button onclick="setProblemView('vision')" id="btn-vision" class="px-8 py-3 rounded-full text-sm font-bold tracking-wide transition-all text-slate-400 hover:text-white">
+              SOLUCIÓN 2026
+            </button>
+          </div>
+        </div>
+
+        <div class="relative flex-grow w-full">
+          
+          <!-- View: Diagnosis -->
+          <div id="view-diagnosis" class="tab-content active absolute inset-0">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full pb-20">
+              <!-- Card 1 -->
+              <div class="glass-panel p-8 rounded-2xl border-t-4 border-t-red-500 flex flex-col justify-between group h-full">
+                <div>
+                  <div class="bg-red-500/10 w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i data-lucide="lock" class="text-red-400 w-7 h-7"></i>
+                  </div>
+                  <h3 class="text-2xl font-bold text-white mb-2">Dependencia de Plataformas</h3>
+                  <p class="text-slate-400 leading-relaxed">En el entorno actual, los algoritmos controlan la visibilidad. La audiencia es "alquilada" y el alcance orgánico es impredecible.</p>
+                </div>
+                <div class="mt-4 p-4 bg-red-900/20 rounded-lg border border-red-500/20">
+                  <span class="text-red-300 text-sm font-bold">Riesgo:</span>
+                  <p class="text-red-200/70 text-sm mt-1">Inestabilidad en el flujo de leads si las reglas cambian.</p>
+                </div>
+              </div>
+              <!-- Card 2 -->
+              <div class="glass-panel p-8 rounded-2xl border-t-4 border-t-orange-500 flex flex-col justify-between group h-full">
+                <div>
+                  <div class="bg-orange-500/10 w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i data-lucide="shuffle" class="text-orange-400 w-7 h-7"></i>
+                  </div>
+                  <h3 class="text-2xl font-bold text-white mb-2">Dispersión de Atención</h3>
+                  <p class="text-slate-400 leading-relaxed">La ruta del usuario es fragmentada. Múltiples enlaces y perfiles diluyen la propuesta de valor y dificultan la conversión directa.</p>
+                </div>
+                <div class="mt-4 p-4 bg-orange-900/20 rounded-lg border border-orange-500/20">
+                  <span class="text-orange-300 text-sm font-bold">Consecuencia:</span>
+                  <p class="text-orange-200/70 text-sm mt-1">Fuga de prospectos calificados antes de contactar.</p>
+                </div>
+              </div>
+              <!-- Card 3 -->
+              <div class="glass-panel p-8 rounded-2xl border-t-4 border-t-yellow-500 flex flex-col justify-between group h-full">
+                <div>
+                  <div class="bg-yellow-500/10 w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i data-lucide="alert-triangle" class="text-yellow-400 w-7 h-7"></i>
+                  </div>
+                  <h3 class="text-2xl font-bold text-white mb-2">Contenido Efímero</h3>
+                  <p class="text-slate-400 leading-relaxed">El contenido de alto valor se pierde en el feed rápidamente. No se está capitalizando el conocimiento como un activo permanente.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View: Vision -->
+          <div id="view-vision" class="tab-content absolute inset-0">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full pb-20">
+              
+              <div class="relative glass-panel rounded-2xl overflow-hidden p-8 flex flex-col justify-center items-center text-center border border-brand-500/30">
+                <div class="absolute inset-0 bg-gradient-to-br from-brand-500/10 to-transparent opacity-50"></div>
+                <div class="bg-brand-500/20 w-20 h-20 rounded-full flex items-center justify-center mb-6 animate-pulse-slow relative z-10">
+                  <i data-lucide="database" class="text-brand-400 w-10 h-10"></i>
+                </div>
+                <h3 class="text-3xl font-bold text-white mb-4 relative z-10">Activos Propios (Owned Media)</h3>
+                <p class="text-brand-100 text-lg relative z-10 max-w-md">
+                  El objetivo es centralizar la audiencia en un entorno controlado.
+                  <br/><br/>
+                  <span class="text-white font-semibold">Convertir seguidores en base de datos.</span>
+                </p>
+              </div>
+
+              <div class="flex flex-col gap-6">
+                <div class="glass-panel p-6 rounded-xl border-l-4 border-l-brand-success flex items-start gap-4">
+                  <i data-lucide="shield-check" class="text-brand-success shrink-0 mt-1 w-6 h-6"></i>
+                  <div>
+                    <h4 class="font-bold text-white text-lg">Autoridad Permanente</h4>
+                    <p class="text-slate-400 text-sm mt-1">Construcción de una biblioteca digital donde el contenido sigue generando valor a largo plazo.</p>
+                  </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-xl border-l-4 border-l-brand-accent flex items-start gap-4">
+                  <i data-lucide="target" class="text-brand-accent shrink-0 mt-1 w-6 h-6"></i>
+                  <div>
+                    <h4 class="font-bold text-white text-lg">Experiencia Personalizada</h4>
+                    <p class="text-slate-400 text-sm mt-1">Adaptar el mensaje y la oferta según el perfil del visitante, maximizando la relevancia.</p>
+                  </div>
+                </div>
+                
+                <div class="glass-panel p-6 rounded-xl border border-brand-700 bg-brand-900/80 flex items-center justify-center h-full">
+                  <p class="text-center font-serif italic text-brand-200 text-lg">
+                    "Un ecosistema digital robusto que trabaja para la marca personal, independientemente de los algoritmos."
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: ARCHITECTURE -->
+    <div class="slide" id="slide-2">
+      <div class="w-full max-w-7xl relative">
+        <h2 class="text-4xl font-bold text-center mb-16">Arquitectura del Ecosistema <span class="text-brand-400">Hub 2026</span></h2>
+
+        <!-- Diagram -->
+        <div class="relative h-[500px] flex items-center justify-center">
+          
+          <!-- Center -->
+          <div class="relative z-20 w-64 h-64 rounded-full glass-panel border-2 border-brand-500/50 flex flex-col items-center justify-center shadow-[0_0_100px_rgba(59,130,246,0.15)] animate-float">
+            <div class="absolute inset-0 rounded-full border border-brand-400/20 animate-ping opacity-20"></div>
+            <i data-lucide="server" class="text-brand-400 mb-4 w-12 h-12"></i>
+            <h3 class="text-2xl font-black tracking-tight text-white text-center">ANDRESNAJERA<br/>.COM</h3>
+            <p class="text-xs text-brand-300 mt-2 font-mono bg-brand-900/80 px-2 py-1 rounded">CENTRAL HUB</p>
+          </div>
+
+          <!-- Left Satellites -->
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col gap-12 w-1/3 items-end pr-12">
+            <div class="group flex items-center gap-4 transition-all hover:translate-x-2">
+              <div class="text-right">
+                <h4 class="font-bold text-white">Redes Sociales</h4>
+                <p class="text-xs text-slate-400">Atracción & Alcance</p>
+              </div>
+              <div class="w-12 h-12 rounded-lg bg-[#0077b5]/20 border border-[#0077b5]/50 flex items-center justify-center text-[#0077b5]">
+                <i data-lucide="linkedin" class="w-6 h-6"></i>
+              </div>
+              <i data-lucide="arrow-right" class="text-slate-600 group-hover:text-brand-400 transition-colors w-6 h-6"></i>
+            </div>
+            <div class="group flex items-center gap-4 transition-all hover:translate-x-2">
+              <div class="text-right">
+                <h4 class="font-bold text-white">Email / Newsletter</h4>
+                <p class="text-xs text-slate-400">Retención & Nurturing</p>
+              </div>
+              <div class="w-12 h-12 rounded-lg bg-yellow-500/20 border border-yellow-500/50 flex items-center justify-center text-yellow-400">
+                <i data-lucide="mail" class="w-6 h-6"></i>
+              </div>
+              <i data-lucide="arrow-right" class="text-slate-600 group-hover:text-brand-400 transition-colors w-6 h-6"></i>
+            </div>
+            <div class="group flex items-center gap-4 transition-all hover:translate-x-2">
+              <div class="text-right">
+                <h4 class="font-bold text-white">Tráfico Pago</h4>
+                <p class="text-xs text-slate-400">Escalamiento (Opcional)</p>
+              </div>
+              <div class="w-12 h-12 rounded-lg bg-pink-500/20 border border-pink-500/50 flex items-center justify-center text-pink-400">
+                <i data-lucide="video" class="w-6 h-6"></i>
+              </div>
+              <i data-lucide="arrow-right" class="text-slate-600 group-hover:text-brand-400 transition-colors w-6 h-6"></i>
+            </div>
+          </div>
+
+          <!-- Right Satellites -->
+          <div class="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-12 w-1/3 pl-12">
+            <div class="group flex items-center gap-4 transition-all hover:-translate-x-2">
+              <i data-lucide="arrow-right" class="text-slate-600 group-hover:text-brand-success transition-colors rotate-180 md:rotate-0 w-6 h-6"></i>
+              <div class="w-12 h-12 rounded-lg bg-brand-success/20 border border-brand-success/50 flex items-center justify-center text-brand-success">
+                <i data-lucide="user-check" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-white">Servicios</h4>
+                <p class="text-xs text-slate-400">Consultoría & High Ticket</p>
+              </div>
+            </div>
+            <div class="group flex items-center gap-4 transition-all hover:-translate-x-2">
+              <i data-lucide="arrow-right" class="text-slate-600 group-hover:text-brand-success transition-colors rotate-180 md:rotate-0 w-6 h-6"></i>
+              <div class="w-12 h-12 rounded-lg bg-purple-500/20 border border-purple-500/50 flex items-center justify-center text-purple-400">
+                <i data-lucide="pen-tool" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-white">Productos</h4>
+                <p class="text-xs text-slate-400">Educación & Recursos</p>
+              </div>
+            </div>
+            <div class="group flex items-center gap-4 transition-all hover:-translate-x-2">
+              <i data-lucide="arrow-right" class="text-slate-600 group-hover:text-brand-success transition-colors rotate-180 md:rotate-0 w-6 h-6"></i>
+              <div class="w-12 h-12 rounded-lg bg-cyan-500/20 border border-cyan-500/50 flex items-center justify-center text-cyan-400">
+                <i data-lucide="database" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-white">Data Propia</h4>
+                <p class="text-xs text-slate-400">Enriquecimiento de CRM</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: STRATEGY -->
+    <div class="slide" id="slide-3">
+      <div class="w-full max-w-7xl">
+        <h2 class="text-4xl font-bold mb-4 text-center">Estrategia de Contenidos & Conversión</h2>
+        <p class="text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+          No todos los visitantes son iguales. Estructuramos el Hub para atender tres niveles de consciencia y monetización.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Column 1 -->
+          <div class="glass-panel p-6 rounded-2xl border-t-4 border-t-blue-400 hover:bg-slate-800/80 transition-all group">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold text-white">01. Autoridad</h3>
+              <i data-lucide="book-open" class="text-blue-400 group-hover:scale-110 transition-transform w-6 h-6"></i>
+            </div>
+            <p class="text-sm text-slate-400 mb-6 min-h-[40px]">Para el visitante que te acaba de descubrir. Busca validar tu expertise.</p>
+            <div class="space-y-3">
+              <div class="p-3 bg-slate-900/50 rounded border border-slate-700">
+                <div class="text-xs font-bold text-blue-300 uppercase mb-1">Activos</div>
+                <div class="text-sm text-white">Artículos "Cornerstone", Casos de Estudio, Manifiesto.</div>
+              </div>
+              <div class="p-3 bg-slate-900/50 rounded border border-slate-700">
+                <div class="text-xs font-bold text-blue-300 uppercase mb-1">KPI</div>
+                <div class="text-sm text-white">Tiempo en sitio, Páginas/Sesión.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2 -->
+          <div class="glass-panel p-6 rounded-2xl border-t-4 border-t-purple-400 hover:bg-slate-800/80 transition-all group transform md:-translate-y-4 shadow-xl shadow-purple-900/10">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold text-white">02. Captura</h3>
+              <i data-lucide="layers" class="text-purple-400 group-hover:scale-110 transition-transform w-6 h-6"></i>
+            </div>
+            <p class="text-sm text-slate-400 mb-6 min-h-[40px]">Para el visitante interesado en resolver un problema específico ahora.</p>
+            <div class="space-y-3">
+              <div class="p-3 bg-slate-900/50 rounded border border-slate-700">
+                <div class="text-xs font-bold text-purple-300 uppercase mb-1">Activos</div>
+                <div class="text-sm text-white">Lead Magnets, Webinars Grabados, Templates.</div>
+              </div>
+              <div class="p-3 bg-slate-900/50 rounded border border-slate-700">
+                <div class="text-xs font-bold text-purple-300 uppercase mb-1">KPI</div>
+                <div class="text-sm text-white">Tasa de Suscripción (Conversion Rate).</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 3 -->
+          <div class="glass-panel p-6 rounded-2xl border-t-4 border-t-green-400 hover:bg-slate-800/80 transition-all group">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold text-white">03. Venta</h3>
+              <i data-lucide="zap" class="text-green-400 group-hover:scale-110 transition-transform w-6 h-6"></i>
+            </div>
+            <p class="text-sm text-slate-400 mb-6 min-h-[40px]">Para el prospecto listo para comprar o contratar consultoría.</p>
+            <div class="space-y-3">
+              <div class="p-3 bg-slate-900/50 rounded border border-slate-700">
+                <div class="text-xs font-bold text-green-300 uppercase mb-1">Activos</div>
+                <div class="text-sm text-white">Páginas de Venta, Booking Calendar, Testimonios.</div>
+              </div>
+              <div class="p-3 bg-slate-900/50 rounded border border-slate-700">
+                <div class="text-xs font-bold text-green-300 uppercase mb-1">KPI</div>
+                <div class="text-sm text-white">Citas Agendadas, Revenue.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: JOURNEY -->
+    <div class="slide" id="slide-4">
+      <div class="max-w-6xl w-full">
+        <h2 class="text-4xl font-bold mb-4 text-center">Experiencia de Usuario (UX)</h2>
+        <p class="text-center text-slate-400 mb-12 max-w-2xl mx-auto">
+          Un flujo diseñado para guiar al usuario de la curiosidad a la acción, calificando el interés en cada paso.
+        </p>
+
+        <div class="relative mb-16">
+          <div class="absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-slate-800 via-brand-500 to-brand-accent -translate-y-1/2 hidden md:block opacity-50"></div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 relative z-10">
+            <!-- Step 1 -->
+            <div class="group relative bg-slate-900 border border-slate-700 p-6 rounded-xl hover:border-brand-500 transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-brand-500/20 flex flex-col items-center text-center">
+              <div class="w-14 h-14 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center mb-4 text-brand-400 group-hover:bg-brand-500 group-hover:text-white transition-colors relative z-20 shadow-lg">
+                <i data-lucide="mouse-pointer-click" class="w-6 h-6"></i>
+              </div>
+              <h3 class="text-lg font-bold mb-2 text-white">1. Atracción</h3>
+              <p class="text-sm text-slate-400">Contenido en Redes Sociales.</p>
+            </div>
+            <!-- Step 2 -->
+            <div class="group relative bg-slate-900 border border-slate-700 p-6 rounded-xl hover:border-brand-500 transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-brand-500/20 flex flex-col items-center text-center">
+              <div class="w-14 h-14 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center mb-4 text-brand-400 group-hover:bg-brand-500 group-hover:text-white transition-colors relative z-20 shadow-lg">
+                <i data-lucide="lightbulb" class="w-6 h-6"></i>
+              </div>
+              <h3 class="text-lg font-bold mb-2 text-white">2. Contexto</h3>
+              <p class="text-sm text-slate-400">Hub Digital (Landing).</p>
+            </div>
+            <!-- Step 3 -->
+            <div class="group relative bg-slate-900 border border-slate-700 p-6 rounded-xl hover:border-brand-500 transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-brand-500/20 flex flex-col items-center text-center">
+              <div class="w-14 h-14 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center mb-4 text-brand-400 group-hover:bg-brand-500 group-hover:text-white transition-colors relative z-20 shadow-lg">
+                <i data-lucide="filter" class="w-6 h-6"></i>
+              </div>
+              <h3 class="text-lg font-bold mb-2 text-white">3. Calificación</h3>
+              <p class="text-sm text-slate-400">Filtrado inteligente.</p>
+            </div>
+            <!-- Step 4 -->
+            <div class="group relative bg-slate-900 border border-slate-700 p-6 rounded-xl hover:border-brand-500 transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-brand-500/20 flex flex-col items-center text-center">
+              <div class="w-14 h-14 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center mb-4 text-brand-400 group-hover:bg-brand-500 group-hover:text-white transition-colors relative z-20 shadow-lg">
+                <i data-lucide="calendar-check" class="w-6 h-6"></i>
+              </div>
+              <h3 class="text-lg font-bold mb-2 text-white">4. Conversión</h3>
+              <p class="text-sm text-slate-400">Cita o Venta.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+           <div class="glass-panel p-8 rounded-2xl border border-slate-700">
+             <h4 class="flex items-center gap-2 text-lg font-bold text-white mb-4">
+               <i data-lucide="user" class="text-brand-400 w-5 h-5"></i>
+               Estrategia de Segmentación
+             </h4>
+             <ul class="text-slate-400 space-y-3 text-sm">
+               <li class="flex items-center gap-2">
+                 <div class="w-1.5 h-1.5 rounded-full bg-brand-500"></div>
+                 Para clientes potenciales de alto valor → <strong>Agenda de llamada prioritaria.</strong>
+               </li>
+               <li class="flex items-center gap-2">
+                 <div class="w-1.5 h-1.5 rounded-full bg-brand-500"></div>
+                 Para perfiles interesados en aprender → <strong>Recursos educativos o Newsletter.</strong>
+               </li>
+               <li class="flex items-center gap-2">
+                 <div class="w-1.5 h-1.5 rounded-full bg-brand-500"></div>
+                 Para audiencia general → <strong>Contenido de valor gratuito.</strong>
+               </li>
+             </ul>
+           </div>
+           
+           <div class="flex flex-col justify-center">
+             <div class="bg-gradient-to-r from-brand-900 to-slate-900 px-6 py-6 rounded-xl border border-brand-500/30 shadow-lg relative overflow-hidden">
+               <div class="absolute top-0 right-0 p-4 opacity-5">
+                 <i data-lucide="filter" class="w-24 h-24"></i>
+               </div>
+               <span class="text-brand-300 font-bold text-xs uppercase tracking-wider">Objetivo</span>
+               <p class="text-xl text-white mt-2 font-medium leading-relaxed">
+                 "Optimizar el tiempo de Andrés, asegurando que las interacciones directas sean solo con prospectos calificados."
+               </p>
+             </div>
+           </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SLIDE 5: DATA -->
+    <div class="slide" id="slide-5">
+      <div class="max-w-6xl w-full flex flex-col md:flex-row gap-12 items-center">
+        
+        <!-- Left: Text -->
+        <div class="flex-1 space-y-8">
+          <h2 class="text-4xl font-bold leading-tight">
+            Impacto Proyectado <br/>
+            <span class="text-brand-400">Crecimiento Compuesto</span>
+          </h2>
+          <p class="text-slate-300 text-lg">
+            A diferencia de las redes sociales (lineales), un Hub Digital acumula autoridad (SEO). El tráfico y los leads crecen exponencialmente mientras el esfuerzo de creación de contenido se estabiliza.
+          </p>
+          
+          <div class="grid grid-cols-2 gap-4 pt-4">
+            <div class="p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+               <div class="text-3xl font-bold text-white mb-1">+400%</div>
+               <div class="text-xs text-slate-400 uppercase">Captación de Leads</div>
+            </div>
+            <div class="p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+               <div class="text-3xl font-bold text-white mb-1">Autom</div>
+               <div class="text-xs text-slate-400 uppercase">Cualificación</div>
+            </div>
+            <div class="p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+               <div class="text-3xl font-bold text-white mb-1">Propiedad</div>
+               <div class="text-xs text-slate-400 uppercase">De la Data (CSV)</div>
+            </div>
+            <div class="p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+               <div class="text-3xl font-bold text-white mb-1">24/7</div>
+               <div class="text-xs text-slate-400 uppercase">Ventas</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Chart -->
+        <div class="flex-1 w-full h-[450px] glass-panel p-6 rounded-2xl border border-slate-700 shadow-2xl relative flex items-center justify-center">
+          <div class="absolute top-0 right-0 p-4">
+            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-900/50 text-green-400 border border-green-500/20">
+              Proyección 2026-2027
+            </span>
+          </div>
+          <div class="w-full h-full">
+            <canvas id="growthChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SLIDE 6: CLOSE -->
+    <div class="slide" id="slide-6">
+       <div class="w-full max-w-5xl">
+         
+         <div class="text-center mb-16">
+           <h2 class="text-5xl font-bold mb-4">La Nueva Realidad Digital <span class="text-brand-400">2026</span></h2>
+           <p className="text-xl text-slate-400">
+             Consolidación de la marca personal como un ecosistema independiente y escalable.
+           </p>
+         </div>
+
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            <!-- Pillar 1 -->
+            <div class="glass-panel p-8 rounded-2xl border border-brand-500/30 relative hover:bg-slate-800 transition-colors">
+              <div class="w-12 h-12 rounded-full bg-brand-500/10 flex items-center justify-center mb-6">
+                <i data-lucide="star" class="text-brand-400 w-6 h-6"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-4">Centralización</h3>
+              <p class="text-slate-300 leading-relaxed">
+                Todo el tráfico y la atención generada en redes converge en un único punto de control. <strong>Tu casa digital, tus reglas.</strong>
+              </p>
+            </div>
+
+            <!-- Pillar 2 -->
+            <div class="glass-panel p-8 rounded-2xl border border-brand-accent/30 relative hover:bg-slate-800 transition-colors">
+              <div class="w-12 h-12 rounded-full bg-brand-accent/10 flex items-center justify-center mb-6">
+                 <i data-lucide="check-circle-2" class="text-brand-accent w-6 h-6"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-4">Automatización</h3>
+              <p class="text-slate-300 leading-relaxed">
+                Sistemas que califican leads y agendan citas 24/7. El negocio opera y captura valor incluso sin intervención manual constante.
+              </p>
+            </div>
+
+            <!-- Pillar 3 -->
+            <div class="glass-panel p-8 rounded-2xl border border-brand-success/30 relative hover:bg-slate-800 transition-colors">
+              <div class="w-12 h-12 rounded-full bg-brand-success/10 flex items-center justify-center mb-6">
+                <i data-lucide="circle" class="text-brand-success w-6 h-6"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-4">Propiedad de Datos</h3>
+              <p class="text-slate-300 leading-relaxed">
+                Transformar "seguidores" (métricas de vanidad) en una base de datos propia y accionable (activos reales del negocio).
+              </p>
+            </div>
+
+         </div>
+
+         <div class="flex justify-center mt-16">
+            <div class="text-slate-500 text-sm flex items-center gap-2 border border-slate-800 px-4 py-2 rounded-full">
+              <span>Propuesta Estratégica para Andrés Nájera</span>
+              <span class="w-1 h-1 bg-slate-500 rounded-full"></span>
+              <span>Visión 2026</span>
+            </div>
+         </div>
+       </div>
+    </div>
+
+  </div>
+
+  <!-- Navigation Bar -->
+  <div class="fixed bottom-0 left-0 right-0 p-6 flex justify-between items-center z-50 bg-gradient-to-t from-brand-900 via-brand-900/80 to-transparent">
+    <div class="flex items-center gap-2">
+      <span class="text-brand-400 font-bold text-sm tracking-widest">PROPUESTA HUB DIGITAL</span>
+      <span class="text-slate-500 text-sm">|</span>
+      <span class="text-slate-400 text-sm">ANDRESNAJERA.COM</span>
+    </div>
+
+    <div class="flex gap-2" id="nav-dots">
+      <!-- Dots injected by JS -->
+    </div>
+
+    <div class="flex gap-4">
+      <button onclick="prevSlide()" id="btn-prev" class="p-3 rounded-full bg-slate-800 text-white hover:bg-brand-500 disabled:opacity-30 disabled:hover:bg-slate-800 transition-all">
+        <i data-lucide="chevron-left" class="w-6 h-6"></i>
+      </button>
+      <button onclick="nextSlide()" id="btn-next" class="p-3 rounded-full bg-slate-800 text-white hover:bg-brand-500 disabled:opacity-30 disabled:hover:bg-slate-800 transition-all">
+        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Logic Script -->
+  <script>
+    // --- State ---
+    let currentSlide = 0;
+    const totalSlides = 7;
+    const slides = document.querySelectorAll('.slide');
+    const dotsContainer = document.getElementById('nav-dots');
+    const bgImage = document.getElementById('bg-image');
+
+    // --- Init ---
+    // Create dots
+    for(let i=0; i<totalSlides; i++) {
+      const dot = document.createElement('button');
+      dot.className = `h-1.5 rounded-full transition-all duration-300 ${i === 0 ? 'w-8 bg-brand-400' : 'w-2 bg-slate-700 hover:bg-slate-500'}`;
+      dot.onclick = () => goToSlide(i);
+      dotsContainer.appendChild(dot);
+    }
+    
+    // Icons
+    lucide.createIcons();
+
+    // Chart Init
+    const ctx = document.getElementById('growthChart').getContext('2d');
+    const gradientTraffic = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientTraffic.addColorStop(0, 'rgba(100, 116, 139, 0.3)');
+    gradientTraffic.addColorStop(1, 'rgba(100, 116, 139, 0)');
+    
+    const gradientRevenue = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientRevenue.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
+    gradientRevenue.addColorStop(1, 'rgba(59, 130, 246, 0)');
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Q1', 'Q2', 'Q3', 'Q4', '2027 Q1'],
+        datasets: [
+          {
+            label: 'Tráfico Web',
+            data: [1000, 2500, 5000, 12000, 25000],
+            borderColor: '#64748b',
+            backgroundColor: gradientTraffic,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            pointHitRadius: 10
+          },
+          {
+            label: 'Base de Datos (Subs)',
+            data: [50, 200, 600, 1800, 4500],
+            borderColor: '#8b5cf6',
+            backgroundColor: '#8b5cf6',
+            fill: false, // In Recharts it was stacked, here represented as a line for clarity
+            tension: 0.4,
+            pointRadius: 4
+          },
+          {
+            label: 'Valor de Pipeline',
+            data: [10, 35, 80, 150, 300], // Normalized for visual scale
+            borderColor: '#3b82f6',
+            backgroundColor: gradientRevenue,
+            fill: true,
+            tension: 0.4,
+            borderWidth: 3,
+            pointRadius: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#94a3b8' } },
+          tooltip: {
+            backgroundColor: '#0f172a',
+            borderColor: '#475569',
+            borderWidth: 1,
+            titleColor: 'white',
+            bodyColor: 'white'
+          }
+        },
+        scales: {
+          x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+          y: { grid: { color: '#334155' }, ticks: { display: false } } // Hide values as they are different scales visually
+        }
+      }
+    });
+
+
+    // --- Functions ---
+
+    function updateVisuals() {
+      // Slides
+      slides.forEach((s, i) => {
+        if(i === currentSlide) s.classList.add('active');
+        else s.classList.remove('active');
+      });
+
+      // Dots
+      Array.from(dotsContainer.children).forEach((dot, i) => {
+        dot.className = `h-1.5 rounded-full transition-all duration-300 ${i === currentSlide ? 'w-8 bg-brand-400' : 'w-2 bg-slate-700 hover:bg-slate-500'}`;
+      });
+
+      // Buttons
+      document.getElementById('btn-prev').disabled = currentSlide === 0;
+      document.getElementById('btn-next').disabled = currentSlide === totalSlides - 1;
+
+      // Background Effect
+      if(currentSlide % 2 === 0) {
+        bgImage.classList.add('scale-110');
+        bgImage.classList.remove('scale-100');
+      } else {
+        bgImage.classList.add('scale-100');
+        bgImage.classList.remove('scale-110');
+      }
+    }
+
+    function nextSlide() {
+      if(currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateVisuals();
+      }
+    }
+
+    function prevSlide() {
+      if(currentSlide > 0) {
+        currentSlide--;
+        updateVisuals();
+      }
+    }
+
+    function goToSlide(idx) {
+      currentSlide = idx;
+      updateVisuals();
+    }
+
+    // Problem Slide Tab Logic
+    function setProblemView(view) {
+      const btnDiag = document.getElementById('btn-diagnosis');
+      const btnVis = document.getElementById('btn-vision');
+      const viewDiag = document.getElementById('view-diagnosis');
+      const viewVis = document.getElementById('view-vision');
+
+      if(view === 'diagnosis') {
+        btnDiag.className = 'px-8 py-3 rounded-full text-sm font-bold tracking-wide transition-all bg-red-500/20 text-red-400 border border-red-500/30 shadow-lg shadow-red-900/20';
+        btnVis.className = 'px-8 py-3 rounded-full text-sm font-bold tracking-wide transition-all text-slate-400 hover:text-white';
+        
+        viewDiag.classList.add('active');
+        viewVis.classList.remove('active');
+      } else {
+        btnDiag.className = 'px-8 py-3 rounded-full text-sm font-bold tracking-wide transition-all text-slate-400 hover:text-white';
+        btnVis.className = 'px-8 py-3 rounded-full text-sm font-bold tracking-wide transition-all bg-brand-500/20 text-brand-400 border border-brand-500/30 shadow-lg shadow-brand-900/20';
+        
+        viewDiag.classList.remove('active');
+        viewVis.classList.add('active');
+      }
+    }
+
+    // --- Events ---
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSlide();
+    });
+
+    // Initial render
+    updateVisuals();
+
+  </script>
+</body>
+</html>
