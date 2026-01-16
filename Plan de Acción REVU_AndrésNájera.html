@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>REVU - Plan de Acción MORE</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              revu: {
+                primary: '#1e293b',
+                accent: '#3b82f6',
+                light: '#f8fafc',
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            animation: {
+              blob: "blob 7s infinite",
+              fadeIn: "fadeIn 0.5s ease-out forwards",
+              bounce: "bounce 1s infinite",
+            },
+            keyframes: {
+              blob: {
+                "0%": { transform: "translate(0px, 0px) scale(1)" },
+                "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                "100%": { transform: "translate(0px, 0px) scale(1)" }
+              },
+              fadeIn: {
+                "0%": { opacity: "0", transform: "translateY(10px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" }
+              }
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      body { font-family: 'Inter', sans-serif; }
+      .scrollbar-hide::-webkit-scrollbar { display: none; }
+      .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      
+      /* Transition classes for accordion */
+      .accordion-content {
+        transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, border-top-width 0.1s;
+      }
+      .rotate-180 { transform: rotate(180deg); }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900 antialiased selection:bg-blue-200 selection:text-blue-900">
+
+    <!-- Fixed Navigation Dots -->
+    <div class="fixed right-6 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-4">
+      <button onclick="scrollToSection('cover')" id="nav-cover" class="w-3 h-3 rounded-full transition-all duration-300 bg-slate-300 hover:bg-slate-400" title="Portada"></button>
+      <button onclick="scrollToSection('timeline')" id="nav-timeline" class="w-3 h-3 rounded-full transition-all duration-300 bg-slate-300 hover:bg-slate-400" title="Cronograma"></button>
+      <button onclick="scrollToSection('closing')" id="nav-closing" class="w-3 h-3 rounded-full transition-all duration-300 bg-slate-300 hover:bg-slate-400" title="Cierre"></button>
+    </div>
+
+    <!-- Section 1: Cover -->
+    <section id="cover" class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 text-white p-8 relative overflow-hidden">
+      <!-- Decorative Background Elements -->
+      <div class="absolute top-0 left-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+      <div class="absolute bottom-0 right-0 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+
+      <div class="z-10 text-center max-w-5xl space-y-12">
+        <div class="space-y-4">
+          <h1 class="text-6xl md:text-8xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-slate-400">
+            Metodología MORE
+          </h1>
+          
+          <div class="h-1 w-32 bg-blue-500 mx-auto rounded-full"></div>
+
+          <p class="text-2xl md:text-4xl text-slate-300 font-light max-w-3xl mx-auto pt-4">
+            Plan de acción y cronograma
+          </p>
+        </div>
+
+        <button 
+          onclick="scrollToSection('timeline')"
+          class="group mt-16 px-10 py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-semibold text-lg transition-all duration-300 shadow-lg shadow-blue-600/30 flex items-center gap-3 mx-auto cursor-pointer"
+        >
+          Comenzar
+          <i data-lucide="arrow-right" class="w-6 h-6 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+      </div>
+
+      <!-- Scroll Hint -->
+      <div id="scroll-hint" class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce text-white/50 opacity-0 transition-opacity duration-1000">
+        <i data-lucide="arrow-down"></i>
+      </div>
+    </section>
+
+    <!-- Section 2: Unified Timeline -->
+    <section id="timeline" class="w-full max-w-5xl mx-auto px-4 py-16 md:py-24 min-h-screen flex flex-col justify-center">
+      <div class="mb-12 text-center md:text-left">
+        <h2 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+          Cronograma y Fases
+        </h2>
+      </div>
+
+      <div id="timeline-container" class="space-y-4">
+        <!-- Javascript will populate this -->
+      </div>
+    </section>
+
+    <!-- Section 3: Closing -->
+    <section id="closing" class="py-20 bg-slate-900 text-white text-center flex flex-col justify-center items-center min-h-[40vh]">
+      <h2 class="text-3xl font-bold mb-4">¡Hagámoslo suceder!</h2>
+      <div class="text-sm text-slate-600">
+        © <span id="year"></span> Documento Confidencial
+      </div>
+    </section>
+
+    <!-- DATA & LOGIC -->
+    <script>
+      // --- DATA ---
+      const ACTION_PLAN_DATA = [
+        {
+          id: 'fase-0',
+          title: 'Fase 0',
+          points: [
+            'Documento de preguntas',
+            'Oferta de valor',
+          ],
+        },
+        {
+          id: 'fase-1',
+          title: 'Fase 1',
+          points: [
+            'Esquema de contenidos (cuantos y que formatos) | Parrilla de contenido::21 Ene',
+            'Contenido muestra de línea editorial::21 Ene',
+            'Aprobación::22 Ene',
+          ],
+        },
+        {
+          id: 'fase-2',
+          title: 'Fase 2',
+          points: [
+            'Elaboración de artes de la parrilla::23 - 29 Ene',
+            'Aprobación::29 Ene',
+            'Cambios::30 Ene - 1 Feb',
+          ],
+        },
+        {
+          id: 'fase-3',
+          title: 'Fase 3: Kickoff',
+          points: [
+            'Programación::1 - 2 Feb',
+            'Publicación de contenidos::2 - 8 Feb',
+          ],
+        },
+        {
+          id: 'fase-4',
+          title: 'Fase 4',
+          points: [
+            'Análisis y optimización::9 - 15 Feb',
+          ],
+        },
+      ];
+
+      const SCHEDULE_DATA = [
+        {
+          id: 'week-actual',
+          week: 'Semana (Actual)',
+          phase: 'Fase 0',
+          responsible: 'Andrés',
+          linkedPhaseId: 'fase-0',
+        },
+        {
+          id: 'week-3',
+          week: 'Semana 3 (Ene 19-25)',
+          phase: 'Fase 1',
+          responsible: 'WeSpeak',
+          linkedPhaseId: 'fase-1',
+        },
+        {
+          id: 'week-4',
+          week: 'Semana 4 (Ene 23-Feb 1)',
+          phase: 'Fase 2',
+          responsible: 'WeSpeak',
+          linkedPhaseId: 'fase-2',
+        },
+        {
+          id: 'week-5',
+          week: 'Semana 5 (Feb 2-8)',
+          phase: 'Fase 3',
+          responsible: 'Wespeak',
+          linkedPhaseId: 'fase-3',
+        },
+        {
+          id: 'week-6',
+          week: 'Semana 6 (Feb 9-15)',
+          phase: 'Fase 4',
+          responsible: 'Wespeak',
+          linkedPhaseId: 'fase-4',
+        },
+      ];
+
+      // --- RENDER LOGIC ---
+
+      // Function to render the timeline items
+      function renderTimeline() {
+        const container = document.getElementById('timeline-container');
+        let html = '';
+
+        SCHEDULE_DATA.forEach((item, index) => {
+          const phaseDetails = ACTION_PLAN_DATA.find(p => p.id === item.linkedPhaseId);
+          // Default open first item
+          const isOpen = index === 0; 
+          
+          // Determine styling based on state (initial render state)
+          const containerClass = isOpen 
+            ? 'bg-white border-blue-200 shadow-xl ring-1 ring-blue-100' 
+            : 'bg-white border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100';
+          
+          const iconBgClass = isOpen ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400';
+          const weekTextClass = isOpen ? 'text-blue-900' : 'text-slate-700';
+          const phaseIconBg = isOpen ? 'bg-blue-50 text-blue-600' : 'text-slate-300';
+          const phaseTextClass = isOpen ? 'text-slate-900' : 'text-slate-600';
+          const chevronClass = isOpen ? 'rotate-180 text-blue-600' : 'text-slate-300';
+          const contentHeightClass = isOpen ? 'max-h-[1000px] opacity-100 border-t border-blue-100' : 'max-h-0 opacity-0 border-t-0 border-transparent';
+
+          // Responsible styling
+          const responsibleBg = item.responsible === 'Andrés' ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-100 text-indigo-600';
+          const responsibleText = item.responsible === 'Andrés' ? 'text-emerald-700' : 'text-indigo-700';
+
+          // Generate List Points HTML
+          let pointsHtml = '';
+          if (phaseDetails) {
+            pointsHtml = `<ul class="space-y-3">
+              ${phaseDetails.points.map((point, idx) => {
+                const [task, date] = point.split('::');
+                const dateBadge = date 
+                  ? `<div class="ml-8 md:ml-0 flex items-center gap-1.5 px-3 py-1 bg-white border border-blue-100 rounded-full shadow-sm text-sm text-blue-600 whitespace-nowrap">
+                       <i data-lucide="clock" class="w-3 h-3"></i>
+                       <span class="font-semibold">${date}</span>
+                     </div>`
+                  : '';
+                
+                return `
+                  <li class="flex flex-col md:flex-row md:items-center gap-3 text-slate-600 animate-fadeIn" style="animation-delay: ${idx * 100}ms">
+                    <div class="flex items-start gap-3 flex-1">
+                      <i data-lucide="check-circle-2" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5"></i>
+                      <span class="leading-relaxed font-medium">${task}</span>
+                    </div>
+                    ${dateBadge}
+                  </li>
+                `;
+              }).join('')}
+            </ul>`;
+          } else {
+            pointsHtml = '<p class="text-slate-400 italic">No hay detalles disponibles para esta fase.</p>';
+          }
+
+          html += `
+            <div id="item-${item.id}" class="rounded-2xl border transition-all duration-500 overflow-hidden ${containerClass}" data-id="${item.id}">
+              
+              <button onclick="toggleAccordion('${item.id}')" class="w-full text-left p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6 cursor-pointer focus:outline-none">
+                
+                <!-- Week Info -->
+                <div class="flex items-center gap-4 md:w-1/3">
+                  <div id="icon-bg-${item.id}" class="p-3 rounded-full transition-colors duration-300 flex-shrink-0 ${iconBgClass}">
+                    <i data-lucide="calendar" class="w-6 h-6"></i>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Semana</span>
+                    <h3 id="week-text-${item.id}" class="text-lg font-bold ${weekTextClass}">${item.week}</h3>
+                  </div>
+                </div>
+
+                <!-- Phase Info -->
+                <div class="flex items-center gap-4 md:w-1/3">
+                  <div id="phase-icon-${item.id}" class="p-2 rounded-lg transition-colors duration-300 ${phaseIconBg}">
+                    <i data-lucide="briefcase" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Fase</span>
+                    <p id="phase-text-${item.id}" class="font-medium ${phaseTextClass}">${item.phase}</p>
+                  </div>
+                </div>
+
+                <!-- Responsible & Arrow -->
+                <div class="flex items-center justify-between md:w-1/3 md:justify-end gap-6">
+                  <div class="flex items-center gap-3">
+                    <div class="p-1 rounded-full ${responsibleBg}">
+                      <i data-lucide="user-circle-2" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-sm font-semibold ${responsibleText}">${item.responsible}</span>
+                  </div>
+                  <div id="chevron-${item.id}" class="transform transition-transform duration-300 ${chevronClass}">
+                    <i data-lucide="chevron-down" class="w-6 h-6"></i>
+                  </div>
+                </div>
+              </button>
+
+              <!-- Content -->
+              <div id="content-${item.id}" class="accordion-content bg-slate-50/50 ${contentHeightClass}">
+                <div class="p-6 md:p-8 md:pl-28">
+                  ${pointsHtml}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+        // Re-initialize icons after injection
+        lucide.createIcons();
+      }
+
+      // --- ACCORDION LOGIC ---
+      let openItemId = SCHEDULE_DATA[0].id; // Track open item
+
+      function toggleAccordion(id) {
+        if (openItemId === id) {
+          closeItem(id);
+          openItemId = null;
+        } else {
+          if (openItemId) closeItem(openItemId);
+          openItem(id);
+          openItemId = id;
+        }
+      }
+
+      function openItem(id) {
+        // Container styles
+        const el = document.getElementById(`item-${id}`);
+        el.className = 'rounded-2xl border transition-all duration-500 overflow-hidden bg-white border-blue-200 shadow-xl ring-1 ring-blue-100';
+
+        // Icon BG
+        document.getElementById(`icon-bg-${id}`).className = 'p-3 rounded-full transition-colors duration-300 flex-shrink-0 bg-blue-600 text-white';
+        // Week Text
+        document.getElementById(`week-text-${id}`).className = 'text-lg font-bold text-blue-900';
+        // Phase Icon
+        document.getElementById(`phase-icon-${id}`).className = 'p-2 rounded-lg transition-colors duration-300 bg-blue-50 text-blue-600';
+        // Phase Text
+        document.getElementById(`phase-text-${id}`).className = 'font-medium text-slate-900';
+        // Chevron
+        document.getElementById(`chevron-${id}`).className = 'transform transition-transform duration-300 rotate-180 text-blue-600';
+        // Content
+        const content = document.getElementById(`content-${id}`);
+        content.classList.remove('max-h-0', 'opacity-0', 'border-t-0', 'border-transparent');
+        content.classList.add('max-h-[1000px]', 'opacity-100', 'border-t', 'border-blue-100');
+      }
+
+      function closeItem(id) {
+        // Container styles
+        const el = document.getElementById(`item-${id}`);
+        el.className = 'rounded-2xl border transition-all duration-500 overflow-hidden bg-white border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100';
+
+        // Icon BG
+        document.getElementById(`icon-bg-${id}`).className = 'p-3 rounded-full transition-colors duration-300 flex-shrink-0 bg-slate-100 text-slate-400';
+        // Week Text
+        document.getElementById(`week-text-${id}`).className = 'text-lg font-bold text-slate-700';
+        // Phase Icon
+        document.getElementById(`phase-icon-${id}`).className = 'p-2 rounded-lg transition-colors duration-300 text-slate-300';
+        // Phase Text
+        document.getElementById(`phase-text-${id}`).className = 'font-medium text-slate-600';
+        // Chevron
+        document.getElementById(`chevron-${id}`).className = 'transform transition-transform duration-300 text-slate-300';
+        // Content
+        const content = document.getElementById(`content-${id}`);
+        content.classList.remove('max-h-[1000px]', 'opacity-100', 'border-t', 'border-blue-100');
+        content.classList.add('max-h-0', 'opacity-0', 'border-t-0', 'border-transparent');
+      }
+
+      // --- NAVIGATION LOGIC ---
+      function scrollToSection(id) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+      }
+
+      // Navigation Active State Observer
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            updateNavState(entry.target.id);
+          }
+        });
+      }, observerOptions);
+
+      function updateNavState(activeId) {
+        ['cover', 'timeline', 'closing'].forEach(id => {
+          const btn = document.getElementById(`nav-${id}`);
+          if (id === activeId) {
+            btn.className = 'w-3 h-3 rounded-full transition-all duration-300 bg-blue-600 scale-125 ring-4 ring-blue-600/20';
+          } else {
+            btn.className = 'w-3 h-3 rounded-full transition-all duration-300 bg-slate-300 hover:bg-slate-400';
+          }
+        });
+      }
+
+      // --- INITIALIZATION ---
+      document.addEventListener('DOMContentLoaded', () => {
+        // Set Year
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
+        // Render timeline
+        renderTimeline();
+        
+        // Observe sections
+        ['cover', 'timeline', 'closing'].forEach(id => {
+          observer.observe(document.getElementById(id));
+        });
+
+        // Show scroll hint
+        setTimeout(() => {
+          const hint = document.getElementById('scroll-hint');
+          if(hint) hint.classList.remove('opacity-0');
+        }, 3000);
+      });
+
+    </script>
+  </body>
+</html>
